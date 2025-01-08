@@ -1,0 +1,74 @@
+﻿@page "/"
+@implements IDisposable
+@inject NavigationManager Navigation
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Home</PageTitle>
+
+@if (claims.Any())
+{
+    @foreach (var claim in claims)
+    {
+        @if (claim.Type == "name") 
+        {
+            <h1>Welcome @claim.Value!</h1>
+            <p>You can now access the Counter, Weather, and User Claims tab.</p>
+        }
+    }
+}
+
+
+<div class="nav-item px-3">
+    <AuthorizeView>
+        <Authorized>
+            <form action="authentication/logout" method="post">
+                <AntiforgeryToken />
+                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                <button type="submit" class="btn btn-primary">
+                    <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                    @context.User.Identity?.Name
+                </button>
+            </form>
+        </Authorized>
+        <NotAuthorized>
+            <button type="submit" class="btn btn-primary" onclick="window.location.href='/authentication/login';">
+                <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+            </button>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    private IEnumerable<Claim> claims = [];
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override void OnInitialized()
+    {
+        currentUrl = Navigation.Uri;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthState == null)
+        {
+            return;
+        }
+
+        var authState = await AuthState;
+        claims = authState.User.Claims;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = Navigation.Uri;
+        StateHasChanged();
+    }
+
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+}
