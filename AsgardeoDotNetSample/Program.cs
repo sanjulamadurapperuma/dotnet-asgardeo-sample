@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using AsgardeoDotNetSample;
 
-const string MS_OIDC_SCHEME = "MicrosoftOidc";
+const string ASGARDEO_OIDC_SCHEME = "AsgardeoOidc";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +27,8 @@ else
 
 builder.Services.AddSingleton(httpClient);
 
-builder.Services.AddAuthentication(MS_OIDC_SCHEME)
-    .AddOpenIdConnect(MS_OIDC_SCHEME, oidcOptions =>
+builder.Services.AddAuthentication(ASGARDEO_OIDC_SCHEME)
+    .AddOpenIdConnect(ASGARDEO_OIDC_SCHEME, oidcOptions =>
     {
 
         oidcOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         oidcOptions.TokenValidationParameters.RoleClaimType = "roles";
         oidcOptions.MetadataAddress = Environment.GetEnvironmentVariable("METADATA_ADDRESS");
         oidcOptions.SaveTokens = true;
-
+        oidcOptions.Scope.Add("internal_login");
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 

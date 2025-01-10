@@ -24,7 +24,8 @@
         "AUTHORITY": "https://api.asgardeo.io/t/sanjula/",
         "CLIENT_ID": "7Nr4bQdLbmvkf8umwn0PaMt0SAsa",
         "CLIENT_SECRET": "FrfV4YEn8WHQUIbHcIMA6NTtf4ugERw6fCa6fXMsZgga",
-        "METADATA_ADDRESS": "https://api.asgardeo.io/t/sanjula/oauth2/token/.well-known/openid-configuration"
+        "METADATA_ADDRESS": "https://api.asgardeo.io/t/sanjula/oauth2/token/.well-known/openid-configuration",
+        "SCIM2_ME_ENDPOINT": "https://api.asgardeo.io/t/sanjula/scim2/Me"
       }
     },
     "IIS Express": {
