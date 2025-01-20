@@ -1,0 +1,95 @@
+@page "/scim2-me"
+@inject HttpClient Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Authentication;
+@using System.Text.Json
+@attribute [Authorize]
+
+<PageTitle>Protected API</PageTitle>
+
+<h1>Protected API response - /scim2/Me</h1>
+
+<!-- Displaying the formatted JSON response -->
+@if (!string.IsNullOrEmpty(apiResponse))
+{
+    <pre>@apiResponse</pre>
+}
+
+@code {
+    private string? token;
+    private string? apiResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+
+        if (httpContext != null)
+        {
+            // Now, safely call GetTokenAsync
+            var accessToken = await httpContext.GetTokenAsync("access_token");
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                token = accessToken;
+                await CallApi();
+            }
+            else
+            {
+                apiResponse = "Access token was not found. Protected API invocation failed.";
+            }
+        }
+        else
+        {
+            apiResponse = "Protected API invocation failed due to invalid authentication state.";
+        }
+    }
+
+    private async Task CallApi()
+    {
+        if (string.IsNullOrEmpty(token))
+        {
+            // Token is not available, handle the case where the user is not authenticated
+            Console.WriteLine("Token is null or empty.");
+            return;
+        }
+
+        // Set the Authorization header with the Bearer token
+        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        // Make the API call
+        var response = await Http.GetAsync(Environment.GetEnvironmentVariable("SCIM2_ME_ENDPOINT"));
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Process the response
+            var data = await response.Content.ReadAsStringAsync();
+            // Format the JSON response into a pretty string for display
+            apiResponse = FormatJson(data);
+            // Do something with the data
+        }
+        else
+        {
+            apiResponse = "Error invoking protected API.";
+            // Handle error (unauthorized, forbidden, etc.)
+            Console.WriteLine("Error invoking protected API. Recieved an unsuccessful response: " + response.StatusCode);
+        }
+    }
+
+    // Method to format JSON response for pretty display
+    private string FormatJson(string json)
+    {
+        try
+        {
+            // Parse the JSON string into an object
+            var jsonObject = JsonSerializer.Deserialize<JsonElement>(json);
+
+            // Convert the object back into a nicely formatted JSON string
+            return JsonSerializer.Serialize(jsonObject, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            return $"Error formatting JSON: {ex.Message}";
+        }
+    }
+}
