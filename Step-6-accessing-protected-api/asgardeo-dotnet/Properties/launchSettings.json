@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AUTHORIZATION_ENDPOINT": "https://api.asgardeo.io/t/<org>/oauth2/authorize",
+        "TOKEN_ENDPOINT": "https://api.asgardeo.io/t/<org>/oauth2/token",
+        "JWKS_URI": "https://api.asgardeo.io/t/<org>/oauth2/jwks",
+        "LOGOUT_URI": "https://api.asgardeo.io/t/<org>/oidc/logout",
+        "AUTHORITY": "https://api.asgardeo.io/t/<org>/",
+        "CLIENT_ID": "<client_id>",
+        "CLIENT_SECRET": "<client_secret>",
+        "METADATA_ADDRESS": "https://api.asgardeo.io/t/<org>/oauth2/token/.well-known/openid-configuration",
+        "SCIM2_ME_ENDPOINT": "https://api.asgardeo.io/t/<org>/scim2/Me",
+      }
+    },
+  }
+}
+
